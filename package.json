@@ -1,0 +1,30 @@
+{
+  "name": "grunt-img-base64",
+  "version": "1.0.0",
+  "description": "A grunt tool to convert an image to base64.",
+  "main": "tasks/index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shushanfx/grunt-img-base64.git"
+  },
+  "keywords": [
+    "grunt",
+    "base64",
+    "image",
+    "img"
+  ],
+  "author": "shushanfx",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shushanfx/grunt-img-base64/issues"
+  },
+  "homepage": "https://github.com/shushanfx/grunt-img-base64",
+  "dependencies": {
+    "base64-img": "^1.0.3",
+    "content-type-mime": "^1.0.1",
+    "grunt": "^0.4.5"
+  }
+}
