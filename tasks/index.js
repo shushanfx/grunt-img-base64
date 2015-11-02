@@ -13,14 +13,14 @@ function getAbsolutePath(p, grunt){
 
 function replaceAll(str, src, dst){
 	var a = str, b = null;
-	while(a === b){
+	while(a != b){
 		b = a;
 		a = b.replace(src, dst);
 	}
 	return a;
 }
 
-function handleImage(src, content){
+function handleImage(src, content, grunt){
 	var ret = content;
 	var reg = /url\(\s*[\"\']?\s*([^\'\"\)]*)\s*[\"\']?\s*\)/gi
 	var result = null;
@@ -29,11 +29,11 @@ function handleImage(src, content){
 
 	var buildBase64Image = function(r, d){
 		var type = ContentType(r);
-		return ["url(data:", type, ";base64,", data, ")"].join("");
+		return ["url(",data, ")"].join("");
 	}
-
-	while((result = reg.exec(src))){
-		realPath = path.join(src, result[1]);
+	
+	while((result = reg.exec(content))){
+		realPath = path.join(path.dirname(src), result[1]);
 		if(fs.existsSync(realPath)){
 			data = base64.base64Sync(realPath);
 			map[result[0]] = buildBase64Image(realPath, data);
@@ -41,6 +41,7 @@ function handleImage(src, content){
 	}
 
 	Object.keys(map).forEach(function(item, index){
+		grunt.log.debug(item + " -> " + map[item]);
 		ret = replaceAll(ret, item, map[item]);
 	});
 
@@ -67,13 +68,13 @@ module.exports = function(grunt){
 				encoding: encoding
 			});
 			if(str){
-				context += handleImage(newItem, content);
+				context += handleImage(newItem, str, grunt);
 			}
 		});
 
-		grunt.file.write(getAbsolutePath(dst), content, {
+		grunt.file.write(getAbsolutePath(dst, grunt), context, {
 			encoding: encoding
 		});
-		done.done(true);
+		done(true);
 	});
 }
