@@ -8,20 +8,38 @@ npm install grunt-img-base64
 ## 使用
 ````javascript
 module.exports = function(grunt) {
+
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     img2base64: {
       build: {
+        cwd: "",
         src: 'F:\\work\\nw\\index.css',
         dst: 'F:\\work\\nw\\my.css'
+      },
+      buildWithCWD: {
+        cwd: "F:\\work\\nw",
+        src: 'index.css',
+        dst: 'my02.css' 
+      },
+      buildWithCWD2: {
+        cwd: "F:\\work\\nw",
+        concat: true,
+        src: '*.css',
+        dst: 'my03.css' 
       }
     }
   });
-  // Load the plugin that provides the "base64" task.
+
+  // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-img-base64');
+
   // Default task(s).
-  grunt.registerTask('default', ['img2base64']);
+  grunt.registerTask('default', ['img2base64:build']);
+  grunt.registerTask('default1', ['img2base64:buildWithCWD']);
+  grunt.registerTask('default2', ['img2base64:buildWithCWD2']);
+
 };
 ````
 ## 输入&输出
