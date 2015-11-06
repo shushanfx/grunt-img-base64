@@ -55,26 +55,73 @@ module.exports = function(grunt){
 		var arr = [];
 		var context = '';
 		var encoding = this.data.encoding || "UTF-8";
+		var cwd = this.data.cwd;
+		var concat = this.data.concat || false;
+		var srcArray = [];
+		
 		if(Array.isArray(src)){
 			arr.push(src);
 		}
 		else{
 			arr.push(src);
 		}
+		
+		if(cwd){
+			if(!grunt.file.isDir(cwd)){
+				grunt.log.error("The property must be a directory.");
+				done(true);
+				return -1;
+			}	
+			else{
+				process.chdir(cwd);
+			}	
+		}
+		
+		if(concat){
+			// concat the files
+			if(grunt.file.isDir(dst)){
+				dst = path.join(dst, (+ new Date()) + ".css");
+			}
+		}
+		else{
+			if(grunt.file.isFile(dst)){
+				dst = path.dirname(dst);	
+			}
+		}
 
 		arr.forEach(function(item, index){
+			var myArray = grunt.file.expand({
+				cwd : cwd || process.cwd()
+			}, item);
+			srcArray = srcArray.concat(myArray);				
+		});
+
+		arr = srcArray;
+		arr.forEach(function(item, index){
 			var newItem = getAbsolutePath(item, grunt);
-			var str = grunt.file.read(newItem, {
-				encoding: encoding
-			});
-			if(str){
-				context += handleImage(newItem, str, grunt);
+			if(grunt.file.isFile(newItem)){
+				var str = grunt.file.read(newItem, {
+					encoding: encoding
+				});
+				var newStr = handleImage(newItem, str, grunt);
+				if(str){
+					if(concat){
+						context += (newStr + "\n");
+					}
+					else{
+						grunt.file.write(getAbsolutePath(path.join(dst, path.basename(newItem)), grunt), newStr, {
+							encoding: encoding
+						});
+					}
+				}	
 			}
 		});
 
-		grunt.file.write(getAbsolutePath(dst, grunt), context, {
-			encoding: encoding
-		});
+		if(concat){
+			grunt.file.write(getAbsolutePath(dst, grunt), context, {
+				encoding: encoding
+			});	
+		}
 		done(true);
 	});
 }
